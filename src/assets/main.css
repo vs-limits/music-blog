@@ -1,0 +1,246 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ambient-color: rgba(225, 29, 72, 0.15);
+}
+
+/* Base typography */
+body {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* =========================================
+   3D Vinyl Hover Animation
+   ========================================= */
+.vinyl-card {
+  perspective: 1000px;
+}
+
+.vinyl-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  transform-style: preserve-3d;
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 350ms ease;
+}
+
+.vinyl-disc {
+  position: absolute;
+  top: 4%;
+  left: 4%;
+  width: 92%;
+  height: 92%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    #d1d5db 0%,
+    #374151 12%,
+    #111827 20%,
+    #1f2937 38%,
+    #111827 50%,
+    #1f2937 65%,
+    #111827 78%,
+    #030712 100%
+  );
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.1);
+  z-index: 1;
+  transition: transform 420ms cubic-bezier(0.25, 1, 0.5, 1), opacity 300ms ease;
+  transform: translate(0, 0) rotate(0deg);
+  opacity: 0.95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Inner label on vinyl */
+.vinyl-label {
+  width: 32%;
+  height: 32%;
+  border-radius: 50%;
+  background: #f43f5e;
+  border: 4px solid #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+.vinyl-spindle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #030712;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.vinyl-sleeve {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 350ms ease;
+  background-color: #ffffff;
+}
+
+/* Card Hover / Focus States */
+.vinyl-card:hover .vinyl-disc,
+.vinyl-card:focus-within .vinyl-disc {
+  transform: translate(36%, -10%) rotate(55deg);
+}
+
+.vinyl-card:hover .vinyl-sleeve,
+.vinyl-card:focus-within .vinyl-sleeve {
+  transform: scale(1.02);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.2), 0 10px 15px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Accessible Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  .vinyl-wrapper,
+  .vinyl-disc,
+  .vinyl-sleeve {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* =========================================
+   Ambient Glow Background
+   ========================================= */
+.ambient-glow-bg {
+  position: relative;
+}
+
+.ambient-glow-bg::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  height: 380px;
+  background: radial-gradient(
+    ellipse at center,
+    var(--ambient-color) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  filter: blur(55px);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 600ms ease, opacity 600ms ease;
+}
+
+/* =========================================
+   Article Markdown Typography
+   ========================================= */
+.markdown-body {
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  color: #27272a;
+  line-height: 1.85;
+  font-size: 1.0625rem;
+}
+
+.markdown-body h1 {
+  font-size: 1.875rem;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-top: 2rem;
+  margin-bottom: 1.25rem;
+  color: #09090b;
+  letter-spacing: -0.025em;
+}
+
+.markdown-body h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+  color: #18181b;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f4f4f5;
+}
+
+.markdown-body h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  color: #27272a;
+}
+
+.markdown-body p {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.markdown-body blockquote {
+  margin: 1.75rem 0;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid #f43f5e;
+  background: #fff1f2;
+  border-radius: 0 8px 8px 0;
+  color: #4b5563;
+  font-style: italic;
+}
+
+.markdown-body blockquote p {
+  margin: 0;
+}
+
+.markdown-body ul, .markdown-body ol {
+  padding-left: 1.75rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
+}
+
+.markdown-body li {
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.markdown-body img {
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.markdown-body hr {
+  margin: 2.5rem 0;
+  border: 0;
+  border-top: 1px solid #e4e4e7;
+}
+
+.markdown-body a {
+  color: #f43f5e;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+
+.markdown-body code {
+  background-color: #f4f4f5;
+  color: #be123c;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
