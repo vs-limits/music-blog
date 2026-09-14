@@ -3,11 +3,11 @@
     <!-- Ambient Atmospheric Glows -->
     <div
       class="absolute -top-24 left-1/4 w-[550px] h-[550px] bg-rose-600/15 rounded-full blur-[140px] pointer-events-none transition-opacity duration-1000"
-      :class="isPlaying ? 'opacity-100' : 'opacity-40'"
+      :class="isPlaying ? 'opacity-100' : 'opacity-30'"
     ></div>
     <div
       class="absolute top-12 right-10 w-[450px] h-[450px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none transition-opacity duration-1000"
-      :class="isPlaying ? 'opacity-100' : 'opacity-30'"
+      :class="isPlaying ? 'opacity-100' : 'opacity-20'"
     ></div>
 
     <!-- Inner Content Container -->
@@ -21,34 +21,41 @@
               <span v-if="isPlaying" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2" :class="isPlaying ? 'bg-rose-500' : 'bg-neutral-500'"></span>
             </span>
-            <span>{{ isPlaying ? 'ON AIR · 黑胶播放中' : 'STANDBY · 待机' }}</span>
+            <span>{{ isPlaying ? 'ON AIR · 正在播放背景乐' : 'STANDBY · 点击落针播放' }}</span>
             <span class="text-white/30">|</span>
             <span class="text-white/70 font-mono">33⅓ RPM STEREO</span>
           </div>
 
-          <!-- Main Title Requested by User -->
+          <!-- Main Title: Two Lines -->
           <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.2]">
             <span class="block">欢迎！</span>
             <span class="block mt-1 sm:mt-2">Lynmeto的歌单分享</span>
           </h1>
 
-          <!-- Badges & Specs -->
-          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1 text-xs text-neutral-400">
-            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10">Hi-Fi Analog</span>
-            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10">Vinyl Collection</span>
-            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10">Curated by Lynmeto</span>
+          <!-- Current BGM Info Badge -->
+          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-1 text-xs">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-neutral-300">
+              <svg class="w-3.5 h-3.5 text-rose-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+              <span class="text-neutral-400">唱机原声：</span>
+              <span class="font-medium text-white">Run Away (d4vd x Joji Type Beat)</span>
+              <span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold">Free Beat</span>
+            </div>
           </div>
 
           <!-- Interactive Player Controls Bar -->
           <div class="pt-3 flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4">
-            <!-- Play / Pause Button -->
+            <!-- Play / Pause Needle Button -->
             <button
               @click="togglePlay"
               class="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full font-bold text-xs transition-all duration-200 shadow-lg cursor-pointer active:scale-95 select-none"
               :class="isPlaying
-                ? 'bg-rose-600 text-white hover:bg-rose-500 shadow-rose-600/30'
+                ? 'bg-rose-600 text-white hover:bg-rose-500 shadow-rose-600/30 ring-2 ring-rose-400/30'
                 : 'bg-white text-neutral-900 hover:bg-neutral-100 shadow-white/20'"
-              :title="isPlaying ? '抬起唱针暂停' : '落下唱针旋转'"
+              :title="isPlaying ? '抬起唱针暂停播放' : '落下唱针，播放背景音乐'"
             >
               <svg v-if="!isPlaying" class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                 <polygon points="5 3 19 12 5 21 5 3" />
@@ -57,19 +64,19 @@
                 <rect x="6" y="4" width="4" height="16" />
                 <rect x="14" y="4" width="4" height="16" />
               </svg>
-              <span>{{ isPlaying ? '暂停转动' : '落针转动唱机' }}</span>
+              <span>{{ isPlaying ? '暂停播放与旋转' : '落针播放背景乐' }}</span>
             </button>
 
-            <!-- Audio Waveform EQ Visualizer Bars -->
+            <!-- Real-time Audio EQ Visualizer Bars (bounces to beat) -->
             <div
               @click="togglePlay"
               class="flex items-end gap-1 h-10 px-4 py-2 rounded-xl bg-neutral-900/90 border border-neutral-800 cursor-pointer hover:border-neutral-700 transition-colors shadow-inner"
-              title="点击切换播放状态"
+              :title="isPlaying ? '真实声频律动跳跃中 · 点击暂停' : '点击落针播放'"
             >
               <span
                 v-for="(height, i) in eqBars"
                 :key="i"
-                class="w-1.5 rounded-full transition-all duration-100 ease-out"
+                class="w-1.5 rounded-full transition-all duration-75 ease-out"
                 :class="isPlaying ? 'bg-gradient-to-t from-rose-600 via-rose-400 to-amber-300' : 'bg-neutral-700'"
                 :style="{
                   height: `${height}px`
@@ -77,26 +84,26 @@
               ></span>
             </div>
 
-            <!-- Sound Crackle Toggle Button -->
+            <!-- Volume Mute/Unmute Button -->
             <button
-              @click="toggleCrackle"
-              class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-medium border transition-all cursor-pointer"
-              :class="audioEnabled
+              @click="toggleMute"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs font-medium border transition-all cursor-pointer select-none"
+              :class="!isMuted
                 ? 'bg-rose-500/15 text-rose-300 border-rose-500/40 hover:bg-rose-500/25'
                 : 'bg-white/5 text-neutral-400 border-white/10 hover:bg-white/10'"
-              :title="audioEnabled ? '静音黑胶底噪' : '开启沉浸黑胶底噪 (Vinyl Crackle)'"
+              :title="isMuted ? '取消静音' : '静音背景音乐'"
             >
-              <svg v-if="audioEnabled" class="w-3.5 h-3.5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg v-if="!isMuted" class="w-3.5 h-3.5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                 <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
               </svg>
-              <svg v-else class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg v-else class="w-3.5 h-3.5 text-neutral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                 <line x1="23" y1="9" x2="17" y2="15" />
                 <line x1="17" y1="9" x2="23" y2="15" />
               </svg>
-              <span>{{ audioEnabled ? '黑胶底噪开' : '底噪静音' }}</span>
+              <span>{{ isMuted ? '已静音' : '声音开' }}</span>
             </button>
           </div>
         </div>
@@ -105,7 +112,7 @@
         <div
           class="relative cursor-pointer group shrink-0"
           @click="togglePlay"
-          title="点击唱机落针 / 抬针"
+          :title="isPlaying ? '点击唱机抬针暂停' : '点击唱机落针播放背景乐'"
         >
           <!-- Turntable Plinth / Base Plate -->
           <div class="w-[300px] sm:w-[350px] h-[250px] sm:h-[280px] rounded-2xl bg-neutral-900 border border-neutral-700/60 p-5 shadow-[0_25px_60px_rgba(0,0,0,0.8)] relative flex items-center justify-between overflow-hidden transition-transform duration-300 group-hover:scale-[1.02]">
@@ -151,13 +158,13 @@
 
                 <!-- Center Record Label (Rose Coral) -->
                 <div class="relative w-18 sm:w-20 h-18 sm:h-20 rounded-full bg-gradient-to-tr from-rose-700 to-rose-500 shadow-md flex flex-col items-center justify-center text-white border-2 border-neutral-900">
-                  <span class="text-[8px] font-black tracking-widest uppercase">LYNMETO</span>
-                  <span class="text-[6px] font-medium text-rose-100 tracking-wider">SIDE A</span>
+                  <span class="text-[7.5px] font-black tracking-wider uppercase">RUN AWAY</span>
+                  <span class="text-[5.5px] font-medium text-rose-100 tracking-wider">JOJI BEAT</span>
                   <!-- Spindle Center Hole -->
                   <div class="w-3.5 h-3.5 rounded-full bg-neutral-900 border border-neutral-600 flex items-center justify-center my-0.5 shadow-inner">
                     <div class="w-1.5 h-1.5 rounded-full bg-neutral-300"></div>
                   </div>
-                  <span class="text-[6px] font-mono text-rose-200">33 RPM</span>
+                  <span class="text-[6px] font-mono text-rose-200">LYNMETO</span>
                 </div>
               </div>
             </div>
@@ -171,7 +178,7 @@
                 </div>
               </div>
 
-              <!-- Tonearm Rod (Pivots smoothly on state change) -->
+              <!-- Tonearm Rod (Pivots smoothly onto record when playing) -->
               <div
                 class="absolute top-5 right-6 w-1.5 h-40 bg-gradient-to-r from-neutral-400 via-neutral-200 to-neutral-400 shadow-lg origin-top transition-all duration-700 ease-out"
                 :style="{
@@ -193,7 +200,7 @@
 
           <!-- Subtle interaction hint -->
           <div class="text-center mt-2.5 text-xs text-neutral-500 group-hover:text-rose-400 transition-colors">
-            {{ isPlaying ? '⚡ 唱机旋转中 · 点击机身可暂停' : '👆 点击机身落针播放' }}
+            {{ isPlaying ? '⚡ 音乐播放中 · 点击唱机可暂停' : '👆 点击唱机落针播放' }}
           </div>
         </div>
       </div>
@@ -210,110 +217,107 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
-const isPlaying = ref(true)
-const audioEnabled = ref(false)
+const isPlaying = ref(false)
+const isMuted = ref(false)
+const eqBars = ref([4, 4, 4, 4, 4, 4, 4, 4])
 
-// EQ Bars Heights for Audio Visualizer
-const eqBars = ref([10, 16, 26, 18, 28, 20, 14, 22])
-let eqInterval: number | null = null
-
-// Web Audio API for warm vinyl crackle (gentle ambient static)
+// Audio and Web Audio API nodes
+let audioEl: HTMLAudioElement | null = null
 let audioCtx: AudioContext | null = null
-let noiseNode: AudioNode | null = null
-let gainNode: GainNode | null = null
+let analyser: AnalyserNode | null = null
+let dataArray: Uint8Array | null = null
+let sourceNode: MediaElementAudioSourceNode | null = null
+let animFrameId: number | null = null
 
-function updateEq() {
-  if (!isPlaying.value) {
-    eqBars.value = [4, 4, 4, 4, 4, 4, 4, 4]
-    return
-  }
-  eqBars.value = eqBars.value.map(() => {
-    return Math.floor(Math.random() * 24) + 6
+function initMusic() {
+  if (audioEl) return
+
+  audioEl = new Audio('/audio/bgm.mp3')
+  audioEl.loop = true
+  audioEl.volume = 0.65
+
+  audioEl.addEventListener('play', () => {
+    isPlaying.value = true
   })
-}
 
-function initAudio() {
+  audioEl.addEventListener('pause', () => {
+    isPlaying.value = false
+  })
+
   try {
     const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
-    if (!AudioContextClass) return
-
-    audioCtx = new AudioContextClass()
-    const bufferSize = audioCtx.sampleRate * 2
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate)
-    const data = buffer.getChannelData(0)
-
-    // Generate vinyl crackle & soft pink noise
-    let b0 = 0, b1 = 0, b2 = 0
-    for (let i = 0; i < bufferSize; i++) {
-      const white = Math.random() * 2 - 1
-      b0 = 0.99886 * b0 + white * 0.0555179
-      b1 = 0.99332 * b1 + white * 0.0750759
-      b2 = 0.96900 * b2 + white * 0.1538520
-      let pink = b0 + b1 + b2 + white * 0.5362
-
-      // Occasional needle pop / dust crackle
-      if (Math.random() < 0.0008) {
-        pink += (Math.random() * 2 - 1) * 3
-      }
-      data[i] = pink * 0.04
+    if (AudioContextClass) {
+      audioCtx = new AudioContextClass()
+      analyser = audioCtx.createAnalyser()
+      analyser.fftSize = 64
+      sourceNode = audioCtx.createMediaElementSource(audioEl)
+      sourceNode.connect(analyser)
+      analyser.connect(audioCtx.destination)
+      dataArray = new Uint8Array(analyser.frequencyBinCount)
     }
-
-    const noise = audioCtx.createBufferSource()
-    noise.buffer = buffer
-    noise.loop = true
-
-    gainNode = audioCtx.createGain()
-    gainNode.gain.value = audioEnabled.value && isPlaying.value ? 0.08 : 0
-
-    noise.connect(gainNode)
-    gainNode.connect(audioCtx.destination)
-    noise.start(0)
-    noiseNode = noise
   } catch (e) {
-    console.warn('Web Audio initialized error', e)
+    console.warn('Analyser setup fallback', e)
   }
 }
 
-function updateSoundState() {
-  if (!audioCtx) {
-    if (audioEnabled.value && isPlaying.value) {
-      initAudio()
+function updateVisualizer() {
+  if (isPlaying.value && analyser && dataArray) {
+    analyser.getByteFrequencyData(dataArray)
+    // Sample 8 frequency bands across spectrum
+    const step = Math.max(1, Math.floor(dataArray.length / 8))
+    eqBars.value = Array.from({ length: 8 }, (_, i) => {
+      const val = dataArray![i * step] || 0
+      // Map 0~255 to 4~30px
+      return Math.max(4, Math.floor((val / 255) * 28) + 4)
+    })
+  } else if (!isPlaying.value) {
+    eqBars.value = [4, 4, 4, 4, 4, 4, 4, 4]
+  }
+  animFrameId = requestAnimationFrame(updateVisualizer)
+}
+
+async function togglePlay() {
+  initMusic()
+
+  if (audioCtx && audioCtx.state === 'suspended') {
+    try {
+      await audioCtx.resume()
+    } catch {}
+  }
+
+  if (isPlaying.value) {
+    audioEl?.pause()
+    isPlaying.value = false
+  } else {
+    try {
+      await audioEl?.play()
+      isPlaying.value = true
+    } catch (e) {
+      console.warn('Audio play prevented', e)
     }
-    return
-  }
-  if (audioCtx.state === 'suspended' && audioEnabled.value && isPlaying.value) {
-    audioCtx.resume()
-  }
-  if (gainNode) {
-    const targetGain = audioEnabled.value && isPlaying.value ? 0.08 : 0
-    gainNode.gain.setTargetAtTime(targetGain, audioCtx.currentTime, 0.1)
   }
 }
 
-function togglePlay() {
-  isPlaying.value = !isPlaying.value
-  updateEq()
-  updateSoundState()
-}
-
-function toggleCrackle() {
-  audioEnabled.value = !audioEnabled.value
-  if (audioEnabled.value && !isPlaying.value) {
-    isPlaying.value = true
+function toggleMute() {
+  initMusic()
+  isMuted.value = !isMuted.value
+  if (audioEl) {
+    audioEl.muted = isMuted.value
   }
-  updateSoundState()
 }
 
 onMounted(() => {
-  eqInterval = window.setInterval(updateEq, 120)
+  animFrameId = requestAnimationFrame(updateVisualizer)
 })
 
 onUnmounted(() => {
-  if (eqInterval) clearInterval(eqInterval)
-  if (noiseNode) {
-    try {
-      (noiseNode as AudioBufferSourceNode).stop()
-    } catch {}
+  if (animFrameId) {
+    cancelAnimationFrame(animFrameId)
+  }
+  if (audioEl) {
+    audioEl.pause()
+    audioEl.src = ''
+    audioEl = null
   }
   if (audioCtx) {
     try {
@@ -334,6 +338,6 @@ onUnmounted(() => {
 }
 
 .animate-vinyl-spin {
-  animation: vinylSpin 3s linear infinite;
+  animation: vinylSpin 2.8s linear infinite;
 }
 </style>
