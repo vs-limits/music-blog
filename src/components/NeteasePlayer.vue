@@ -77,16 +77,6 @@
         </svg>
       </a>
     </div>
-
-    <!-- Author Pro-tip hint -->
-    <div class="mt-2 text-[10px] text-neutral-400 text-right flex items-center justify-end gap-1">
-      <svg class="w-3 h-3 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10" />
-        <line x1="12" y1="16" x2="12" y2="12" />
-        <line x1="12" y1="8" x2="12.01" y2="8" />
-      </svg>
-      <span>可在文章中添加 <code class="bg-neutral-100 px-1 py-0.5 rounded text-neutral-600">netease: 歌曲ID</code> 启用嵌入播放器</span>
-    </div>
   </div>
 </template>
 
