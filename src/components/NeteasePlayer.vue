@@ -97,6 +97,7 @@ const props = defineProps<{
   songTitle: string
   artist: string
   markdownBody?: string
+  excerpt?: string
   slug?: string
 }>()
 
@@ -108,6 +109,10 @@ const defaultNeteaseIds: Record<string, string> = {
   'instant-crush-daft-punk': '26562854',
 }
 
+// Regex supporting English/Chinese colons, spaces, equals, and URLs:
+// e.g. netease：1837757778, netease: 1837757778, 网易云：1837757778, song?id=1837757778
+const neteasePattern = /(?:(?:netease|网易云|163)(?::|：|\s*=\s*|\s+)\s*|\/song\?(?:[^&\s]*&)*id=|\/song\/)(\d+)/i
+
 // Detect or extract NetEase ID
 const neteaseId = computed<string | null>(() => {
   // 1. Check seed default map
@@ -116,9 +121,16 @@ const neteaseId = computed<string | null>(() => {
   }
 
   // 2. Check if body markdown specifies NetEase ID
-  // Supports: netease: 123456 or [netease: 123456] or music.163.com/#/song?id=123456
   if (props.markdownBody) {
-    const match = props.markdownBody.match(/(?:netease(?::|\s*=\s*)|\/song\?id=)(\d+)/i)
+    const match = props.markdownBody.match(neteasePattern)
+    if (match && match[1]) {
+      return match[1]
+    }
+  }
+
+  // 3. Check if excerpt specifies NetEase ID
+  if (props.excerpt) {
+    const match = props.excerpt.match(neteasePattern)
     if (match && match[1]) {
       return match[1]
     }

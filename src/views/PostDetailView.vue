@@ -112,15 +112,16 @@
           :song-title="post.song_title"
           :artist="post.artist"
           :markdown-body="post.body_markdown"
+          :excerpt="post.excerpt"
           :slug="post.slug"
         />
       </section>
 
       <!-- Excerpt Card (If provided) -->
-      <section v-if="post.excerpt" class="max-w-3xl mx-auto px-4 sm:px-6 my-8 relative z-10">
+      <section v-if="cleanedExcerpt" class="max-w-3xl mx-auto px-4 sm:px-6 my-8 relative z-10">
         <div class="bg-white/90 backdrop-blur-sm border-l-4 border-rose-500 rounded-r-2xl p-5 sm:p-6 shadow-sm border border-neutral-200/60">
           <p class="text-sm sm:text-base text-neutral-700 font-serif italic leading-relaxed">
-            “{{ post.excerpt }}”
+            “{{ cleanedExcerpt }}”
           </p>
         </div>
       </section>
@@ -151,9 +152,18 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const ambientColor = ref('rgba(244, 63, 94, 0.18)')
 
+// Clean metadata like `netease: 123456` or `netease：123456` from prose
+const metadataRegex = /^\s*(?:netease|网易云|163)(?::|：|\s*=\s*|\s+)\s*\d+\s*$/gim
+
+const cleanedExcerpt = computed(() => {
+  if (!post.value?.excerpt) return ''
+  return post.value.excerpt.replace(metadataRegex, '').trim()
+})
+
 const renderedBody = computed(() => {
   if (!post.value?.body_markdown) return ''
-  return renderMarkdown(post.value.body_markdown)
+  const cleanMarkdown = post.value.body_markdown.replace(metadataRegex, '').trim()
+  return renderMarkdown(cleanMarkdown)
 })
 
 function formatDate(dateStr: string | null) {
