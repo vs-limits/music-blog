@@ -31,6 +31,7 @@ export function renderMarkdown(content: string): string {
   if (!content) return ''
   const rawHtml = md.render(content)
   return DOMPurify.sanitize(rawHtml, {
-    ADD_ATTR: ['target', 'rel'],
+    ADD_TAGS: ['iframe'],
+    ADD_ATTR: ['target', 'rel', 'src', 'frameborder', 'border', 'marginwidth', 'marginheight', 'width', 'height', 'allow', 'loading'],
   })
 }

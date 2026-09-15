@@ -1,0 +1,139 @@
+<template>
+  <div class="my-6 rounded-2xl bg-white/95 backdrop-blur-md border border-neutral-200/80 shadow-md p-4 sm:p-5 transition-all">
+    <!-- Header Bar -->
+    <div class="flex items-center justify-between gap-3 mb-3">
+      <div class="flex items-center gap-2">
+        <!-- NetEase Cloud Music Logo Icon -->
+        <div class="w-6 h-6 rounded-full bg-[#C20C0C] flex items-center justify-center text-white shadow-sm shrink-0">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+          </svg>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-neutral-900 tracking-tight flex items-center gap-1.5">
+            网易云音乐
+            <span class="text-[10px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">
+              正版试听
+            </span>
+          </h4>
+        </div>
+      </div>
+
+      <!-- Direct Jump Button to NetEase Page -->
+      <a
+        :href="neteaseJumpUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium text-white bg-[#C20C0C] hover:bg-[#A90909] shadow-sm transition-all duration-200 active:scale-95 shrink-0"
+        :title="`在网易云音乐中收听《${songTitle}》`"
+      >
+        <span>在网易云打开</span>
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- 1. Official Outlink Iframe Player (When Song ID is Available) -->
+    <div v-if="neteaseId" class="w-full overflow-hidden rounded-xl border border-neutral-200/60 bg-neutral-50 shadow-inner">
+      <iframe
+        frameborder="no"
+        border="0"
+        marginwidth="0"
+        marginheight="0"
+        width="100%"
+        height="86"
+        :src="`//music.163.com/outchain/player?type=2&id=${neteaseId}&auto=0&height=66`"
+        class="w-full block"
+        loading="lazy"
+        title="网易云外链播放器"
+      ></iframe>
+    </div>
+
+    <!-- 2. Fallback Direct Search Card (When Song ID is Not Configured Yet) -->
+    <div v-else class="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-xl bg-neutral-50 border border-neutral-200/60">
+      <div class="flex items-center gap-2.5 text-xs text-neutral-600 truncate w-full sm:w-auto">
+        <svg class="w-4 h-4 text-rose-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <polygon points="10 8 16 12 10 16 10 8" />
+        </svg>
+        <span class="truncate">
+          原唱曲目：<strong class="text-neutral-900 font-semibold">{{ songTitle }}</strong> · {{ artist }}
+        </span>
+      </div>
+
+      <a
+        :href="neteaseJumpUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors shrink-0"
+      >
+        <span>前往网易云试听完整版</span>
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Author Pro-tip hint -->
+    <div class="mt-2 text-[10px] text-neutral-400 text-right flex items-center justify-end gap-1">
+      <svg class="w-3 h-3 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+      <span>可在文章中添加 <code class="bg-neutral-100 px-1 py-0.5 rounded text-neutral-600">netease: 歌曲ID</code> 启用嵌入播放器</span>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const props = defineProps<{
+  songTitle: string
+  artist: string
+  markdownBody?: string
+  slug?: string
+}>()
+
+// Built-in seed mapping for standard classic albums
+const defaultNeteaseIds: Record<string, string> = {
+  'plastic-love-mariya-takeuchi': '4937229',
+  'come-fly-with-me-frank-sinatra': '1946808',
+  'dreams-fleetwood-mac': '26830207',
+  'instant-crush-daft-punk': '26562854',
+}
+
+// Detect or extract NetEase ID
+const neteaseId = computed<string | null>(() => {
+  // 1. Check seed default map
+  if (props.slug && defaultNeteaseIds[props.slug]) {
+    return defaultNeteaseIds[props.slug]
+  }
+
+  // 2. Check if body markdown specifies NetEase ID
+  // Supports: netease: 123456 or [netease: 123456] or music.163.com/#/song?id=123456
+  if (props.markdownBody) {
+    const match = props.markdownBody.match(/(?:netease(?::|\s*=\s*)|\/song\?id=)(\d+)/i)
+    if (match && match[1]) {
+      return match[1]
+    }
+  }
+
+  return null
+})
+
+// NetEase Cloud Music direct jump URL
+const neteaseJumpUrl = computed(() => {
+  if (neteaseId.value) {
+    return `https://music.163.com/#/song?id=${neteaseId.value}`
+  }
+  // Universal search link
+  const query = `${props.songTitle} ${props.artist}`.trim()
+  return `https://music.163.com/#/search/m/?s=${encodeURIComponent(query)}&type=1`
+})
+</script>

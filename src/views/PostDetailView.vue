@@ -106,6 +106,16 @@
         </div>
       </header>
 
+      <!-- NetEase Music Official Player & Jump Section -->
+      <section class="max-w-3xl mx-auto px-4 sm:px-6 relative z-10">
+        <NeteasePlayer
+          :song-title="post.song_title"
+          :artist="post.artist"
+          :markdown-body="post.body_markdown"
+          :slug="post.slug"
+        />
+      </section>
+
       <!-- Excerpt Card (If provided) -->
       <section v-if="post.excerpt" class="max-w-3xl mx-auto px-4 sm:px-6 my-8 relative z-10">
         <div class="bg-white/90 backdrop-blur-sm border-l-4 border-rose-500 rounded-r-2xl p-5 sm:p-6 shadow-sm border border-neutral-200/60">
@@ -132,6 +142,7 @@ import { useRoute } from 'vue-router'
 import { fetchPostBySlug } from '../api/posts'
 import { extractAmbientColor } from '../utils/ambient'
 import { renderMarkdown } from '../utils/markdown'
+import NeteasePlayer from '../components/NeteasePlayer.vue'
 import type { Post } from '../types'
 
 const route = useRoute()
