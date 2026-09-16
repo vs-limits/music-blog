@@ -12,6 +12,9 @@ export interface Post {
   excerpt: string
   body_markdown: string
   status: PostStatus
+  netease_id?: string | number
+  tags?: string[]
+  bpm?: number
   published_at: string | null
   created_at: string
   updated_at: string

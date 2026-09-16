@@ -86,6 +86,7 @@ import { computed } from 'vue'
 const props = defineProps<{
   songTitle: string
   artist: string
+  neteaseId?: string | number
   markdownBody?: string
   excerpt?: string
   slug?: string
@@ -105,6 +106,11 @@ const neteasePattern = /(?:(?:netease|网易云|163)(?::|：|\s*=\s*|\s+)\s*|\/s
 
 // Detect or extract NetEase ID
 const neteaseId = computed<string | null>(() => {
+  // 0. Explicit prop (from Frontmatter or API)
+  if (props.neteaseId) {
+    return String(props.neteaseId)
+  }
+
   // 1. Check seed default map
   if (props.slug && defaultNeteaseIds[props.slug]) {
     return defaultNeteaseIds[props.slug]

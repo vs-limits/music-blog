@@ -16,7 +16,7 @@
       <!-- Album Sleeve / Cover Jacket -->
       <div class="vinyl-sleeve border border-neutral-200/80 bg-neutral-100">
         <img
-          :src="post.cover_image_url"
+          :src="resolveMediaUrl(post.cover_image_url, post.slug)"
           :alt="`${post.album} 封面`"
           loading="lazy"
           class="w-full h-full object-cover select-none"
@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import type { Post } from '../types'
+import { resolveMediaUrl } from '../utils/media'
 
 defineProps<{
   post: Post

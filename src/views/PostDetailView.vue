@@ -62,7 +62,7 @@
           <div class="md:col-span-5 flex justify-center md:justify-start">
             <div class="w-64 h-64 sm:w-72 sm:h-72 rounded-2xl overflow-hidden shadow-2xl border border-white/60 bg-neutral-100 ring-1 ring-black/5 relative group">
               <img
-                :src="post.cover_image_url"
+                :src="resolveMediaUrl(post.cover_image_url, post.slug)"
                 :alt="`${post.album} 封面`"
                 class="w-full h-full object-cover"
               />
@@ -78,6 +78,17 @@
               </span>
               <span class="px-2.5 py-1 text-xs font-mono font-medium rounded-full bg-white/80 text-neutral-700 border border-neutral-200/80 backdrop-blur-sm">
                 {{ post.release_year }} 年发行
+              </span>
+              <span v-if="post.bpm" class="px-2.5 py-1 text-xs font-mono font-medium rounded-full bg-amber-50 text-amber-700 border border-amber-200/80 backdrop-blur-sm">
+                {{ post.bpm }} BPM
+              </span>
+              <!-- Tags list -->
+              <span
+                v-for="tag in post.tags"
+                :key="tag"
+                class="px-2 py-0.5 text-[11px] font-medium rounded-full bg-neutral-100/90 text-neutral-600 border border-neutral-200/60"
+              >
+                #{{ tag }}
               </span>
             </div>
 
@@ -111,6 +122,7 @@
         <NeteasePlayer
           :song-title="post.song_title"
           :artist="post.artist"
+          :netease-id="post.netease_id"
           :markdown-body="post.body_markdown"
           :excerpt="post.excerpt"
           :slug="post.slug"
@@ -143,6 +155,7 @@ import { useRoute } from 'vue-router'
 import { fetchPostBySlug } from '../api/posts'
 import { extractAmbientColor } from '../utils/ambient'
 import { renderMarkdown } from '../utils/markdown'
+import { resolveMediaUrl } from '../utils/media'
 import NeteasePlayer from '../components/NeteasePlayer.vue'
 import type { Post } from '../types'
 
@@ -163,7 +176,7 @@ const cleanedExcerpt = computed(() => {
 const renderedBody = computed(() => {
   if (!post.value?.body_markdown) return ''
   const cleanMarkdown = post.value.body_markdown.replace(metadataRegex, '').trim()
-  return renderMarkdown(cleanMarkdown)
+  return renderMarkdown(cleanMarkdown, post.value.slug)
 })
 
 function formatDate(dateStr: string | null) {
@@ -196,7 +209,8 @@ async function loadPost() {
 
     // Extract dominant color for Ambient Glow
     if (res.cover_image_url) {
-      ambientColor.value = await extractAmbientColor(res.cover_image_url)
+      const fullCover = resolveMediaUrl(res.cover_image_url, res.slug)
+      ambientColor.value = await extractAmbientColor(fullCover)
     }
   } catch (err: any) {
     error.value = err.message || '获取文章详情失败'

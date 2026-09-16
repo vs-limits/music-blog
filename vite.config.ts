@@ -21,6 +21,10 @@ export default defineConfig({
       '/storage': {
         target: 'http://localhost:8080',
         changeOrigin: true
+      },
+      '/content': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
       }
     }
   }
