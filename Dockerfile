@@ -1,20 +1,20 @@
 # Stage 1: Build the Vue application
-FROM node:20-alpine AS builder
+FROM docker.m.daocloud.io/library/node:20-alpine AS builder
 
 WORKDIR /app
 
 # Copy dependency specifications
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies using domestic npm mirror for fast build
+RUN npm config set registry https://registry.npmmirror.com && npm ci
 
 # Copy source code and build
 COPY . .
 RUN npm run build
 
 # Stage 2: Serve with Nginx
-FROM nginx:alpine
+FROM docker.m.daocloud.io/library/nginx:alpine
 
 # Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
