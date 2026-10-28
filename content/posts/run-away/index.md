@@ -1,15 +1,20 @@
 ---
-title: "Run Away (d4vd x Joji Type Beat)"
-artist: "Lynmeto"
-album: "Midnight Sessions"
+title: Run Away (d4vd x Joji Type Beat)
+artist: Lynmeto
+album: Midnight Sessions
 release_year: 2026
-genre: "Lo-Fi / R&B"
-netease_id: 1837757778
-tags: ["Lo-Fi", "Boom Bap", "夜间电台", "自制Beat", "黑胶采样"]
+genre: Lo-Fi / R&B
+netease_id: "1837757778"
+tags:
+    - Lo-Fi
+    - Boom Bap
+    - 夜间电台
+    - 自制Beat
+    - 黑胶采样
 bpm: 85
-cover: "./cover.jpg"
-excerpt: "浸润在雨夜霓虹里的下潜鼓点，带有 d4vd 与 Joji 标志性忧郁质感的自制 Beat 唱片随笔。"
-status: "published"
+cover: ./cover.jpg
+excerpt: 浸润在雨夜霓虹里的下潜鼓点，带有 d4vd 与 Joji 标志性忧郁质感的自制 Beat 唱片随笔。
+status: trash
 date: "2026-03-15"
 ---
 

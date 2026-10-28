@@ -299,6 +299,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { fetchPublicBgmApi } from '../api/bgm'
 
 interface Track {
   id: string
@@ -309,8 +310,8 @@ interface Track {
   labelShort: string
 }
 
-// Curated free beats playlist
-const playlist: Track[] = [
+// Curated fallback beats playlist
+const defaultPlaylist: Track[] = [
   {
     id: 'run-away',
     title: 'Run Away',
@@ -369,9 +370,12 @@ const playlist: Track[] = [
   }
 ]
 
+// Dynamic reactive playlist
+const playlist = ref<Track[]>(defaultPlaylist)
+
 // Random initial track index
-const currentTrackIndex = ref(Math.floor(Math.random() * playlist.length))
-const currentTrack = computed(() => playlist[currentTrackIndex.value])
+const currentTrackIndex = ref(Math.floor(Math.random() * defaultPlaylist.length))
+const currentTrack = computed(() => playlist.value[currentTrackIndex.value] || playlist.value[0] || defaultPlaylist[0])
 
 const isPlaying = ref(false)
 const isMuted = ref(false)
@@ -446,12 +450,14 @@ async function loadAndPlayTrack(shouldPlay = true) {
 }
 
 function nextTrack(autoPlay = true) {
-  currentTrackIndex.value = (currentTrackIndex.value + 1) % playlist.length
+  if (playlist.value.length === 0) return
+  currentTrackIndex.value = (currentTrackIndex.value + 1) % playlist.value.length
   loadAndPlayTrack(autoPlay)
 }
 
 function prevTrack() {
-  currentTrackIndex.value = (currentTrackIndex.value - 1 + playlist.length) % playlist.length
+  if (playlist.value.length === 0) return
+  currentTrackIndex.value = (currentTrackIndex.value - 1 + playlist.value.length) % playlist.value.length
   loadAndPlayTrack(true)
 }
 
@@ -511,8 +517,27 @@ function toggleMute() {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   animFrameId = requestAnimationFrame(updateVisualizer)
+
+  // Fetch dynamic public playlist from API
+  try {
+    const remote = await fetchPublicBgmApi()
+    if (remote && remote.length > 0) {
+      playlist.value = remote.map((t) => ({
+        id: t.id,
+        title: t.title,
+        artist: t.artist,
+        tag: t.tag,
+        src: t.src,
+        labelShort: t.label_short || t.labelShort || t.title.toUpperCase().slice(0, 12),
+      }))
+      currentTrackIndex.value = Math.floor(Math.random() * playlist.value.length)
+    }
+  } catch (err) {
+    console.warn('Failed to load remote BGM playlist, using default beats', err)
+  }
+
   initMusic()
 
   // Attempt autoplay on entry (if allowed by browser policy, else play on first user gesture)

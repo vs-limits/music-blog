@@ -40,3 +40,15 @@ export interface PostQueryParams {
   page?: number
   page_size?: number
 }
+
+export interface BGMTrack {
+  id: string
+  title: string
+  artist: string
+  tag: string
+  src: string
+  label_short?: string
+  labelShort?: string
+  is_enabled?: boolean
+  sort_order?: number
+}
