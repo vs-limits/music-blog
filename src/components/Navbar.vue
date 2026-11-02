@@ -1,9 +1,7 @@
 <template>
   <header
     class="sticky top-0 z-40 w-full backdrop-blur-md transition-colors duration-300"
-    :class="isDarkNav
-      ? 'bg-[#090a0d]/80 border-b border-white/10 text-white'
-      : 'bg-[#FBFBFB]/85 border-b border-neutral-200/60 text-neutral-900'"
+    :class="headerClasses"
   >
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <!-- Logo & Brand -->
@@ -36,21 +34,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const isScrolled = ref(false)
+const isAtTop = ref(true)
 
 function handleScroll() {
-  isScrolled.value = window.scrollY > 360
+  const y = window.scrollY
+  isAtTop.value = y <= 40
+  isScrolled.value = y > 360
 }
 
 const isDarkNav = computed(() => {
   return route.path === '/' && !isScrolled.value
 })
 
+const headerClasses = computed(() => {
+  if (isDarkNav.value) {
+    if (isAtTop.value) {
+      return 'bg-[#090a0d] border-b border-transparent text-white'
+    }
+    return 'bg-[#090a0d]/90 border-b border-white/10 text-white'
+  }
+  return 'bg-[#FBFBFB]/85 border-b border-neutral-200/60 text-neutral-900'
+})
+
+watch(
+  () => route.path,
+  () => {
+    handleScroll()
+  }
+)
+
 onMounted(() => {
+  handleScroll()
   window.addEventListener('scroll', handleScroll, { passive: true })
 })
 
